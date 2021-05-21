@@ -207,13 +207,8 @@ __meta__ = {
 }
 
 [node name="Gizmo_Selection" type="Panel" parent="Editor_Controller/Editor_UI"]
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-margin_left = -128.0
-margin_top = -64.0
-margin_right = 152.0
+margin_right = 280.0
+margin_bottom = 64.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Editor_Controller/Editor_UI/Gizmo_Selection"]
 anchor_right = 1.0
@@ -253,6 +248,10 @@ rect_min_size = Vector2( 64, 64 )
 [node name="TextureRect" type="TextureRect" parent="Editor_Controller/Editor_UI/Gizmo_Selection/HBoxContainer/Button_Rotate"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+margin_left = 1.06848
+margin_top = 1.06848
+margin_right = 1.06848
+margin_bottom = 1.06848
 texture = ExtResource( 3 )
 expand = true
 

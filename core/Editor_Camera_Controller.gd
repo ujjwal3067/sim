@@ -81,15 +81,21 @@ func process_movement(delta):
 func _unhandled_input(event):
 	if (editor_controller.is_in_freelook_mode == true):
 		if (event is InputEventMouseMotion):
+			# store the current rotation of the camera
 			var camera_rotation = view_camera.rotation_degrees;
-			
+
+			# NOTE : event.realtive gives the position of the mouse relative to last position ( position in the last frame ) of type Vector2
 			camera_rotation.x = clamp(camera_rotation.x + (-event.relative.y * MOUSE_SENSITIVTY), -CAMERA_MAX_ROTATION_ANGLE, CAMERA_MAX_ROTATION_ANGLE);
 			
-			rotation_degrees.y += -event.relative.x * MOUSE_SENSITIVTY;
+			# rotation_degrees.y += -event.relative.x * MOUSE_SENSITIVTY;
+			camera_rotation.y += -event.relative.x * MOUSE_SENSITIVTY;
 			
 			view_camera.rotation_degrees = camera_rotation;
 	
 	else:
+		# SELECT mode
+		# This mode is used for selecting the object in the viewport
+
 		if (event is InputEventMouseButton):
 			if (event.button_index == BUTTON_LEFT and event.pressed == true):
 				if (editor_controller.editor_mode == "SELECT"):
@@ -97,17 +103,24 @@ func _unhandled_input(event):
  
  
 func _physics_process(delta):
+
+	# send_raycast is only true when editor is in SELECT MODE
 	if (send_raycast == true):
+		# we send out single raycast per mouse click so turn it off
 		send_raycast = false;
 		var selected_node = null;
-		var space_state = get_world().direct_space_state;
+		var space_state = get_world().direct_space_state; # don't access this method out side physics process thread
 		
 		var raycast_from = view_camera.project_ray_origin(get_tree().root.get_mouse_position())
 		var raycast_to = raycast_from + view_camera.project_ray_normal(get_tree().root.get_mouse_position()) * 100;
-		
+
+		# NORMAL_COLLISON_LAYER is collision mask
+		# output of intersect query is a dictionary
 		var result = space_state.intersect_ray(raycast_from, raycast_to, [self], NORMAL_COLLISION_LAYER);
-		
+
 		if (result.size() > 0):
 			selected_node = result.collider;
-		
+
+		# emit signal also pass the collider details of the object selected
+		# null will be emitted if no node are found by the raycast.
 		emit_signal("physics_object_selected", selected_node);
