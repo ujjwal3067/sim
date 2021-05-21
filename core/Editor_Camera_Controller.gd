@@ -24,10 +24,14 @@ func _ready():
  
  
 func _process(delta):
+
+	# checking if the right mouse button is pressed and held
+
 	if (Input.is_mouse_button_pressed(BUTTON_RIGHT)):
 		if (Input.get_mouse_mode() != Input.MOUSE_MODE_CAPTURED):
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED);
-		
+
+		# switch the editor mode to freelook for freelook camera movement.
 		editor_controller.is_in_freelook_mode = true;
 	
 	else:
@@ -39,30 +43,40 @@ func _process(delta):
 	if (editor_controller.is_in_freelook_mode == true):
 		process_movement(delta);
  
- 
+
+# This process takes care of the movment during the freelook mode.
 func process_movement(delta):
 	var movement_vector = Vector3(0, 0, 0);
 	var movement_speed = MOVE_SPEED;
-	
+
+	# W = editor_move_forward
+	# S = editor_move_backward
+	# D = editor_move_right
+	# L = editor_move_left
+	#
+	#NOTE : camera node faces negatice z axis that means to move forward you have add negative vector
+
 	if (Input.is_action_pressed("editor_move_forward") == true):
 		movement_vector.z = 1;
 	elif (Input.is_action_pressed("editor_move_backward") == true):
 		movement_vector.z -= 1;
-	
 	if (Input.is_action_pressed("editor_move_right") == true):
 		movement_vector.x = 1;
 	elif (Input.is_action_pressed("editor_move_left") == true):
 		movement_vector.x = -1;
-	
+
+	# checks if the shift key is held down or not
 	if (Input.is_key_pressed(KEY_SHIFT)):
 		movement_speed = SHIFT_SPEED;
 	elif (Input.is_key_pressed(KEY_CONTROL)):
 		movement_speed = CONTROL_SPEED;
-	
+
+	# add the new vectors to the global transform of the camera
+	# global_transform.origin = camera global transform
 	global_transform.origin += -view_camera.global_transform.basis.z * movement_vector.z * movement_speed * delta;
 	
 	global_transform.origin += view_camera.global_transform.basis.x * movement_vector.x * movement_speed * delta;
- 
+
  
 func _unhandled_input(event):
 	if (editor_controller.is_in_freelook_mode == true):
@@ -85,9 +99,7 @@ func _unhandled_input(event):
 func _physics_process(delta):
 	if (send_raycast == true):
 		send_raycast = false;
-		
 		var selected_node = null;
-		
 		var space_state = get_world().direct_space_state;
 		
 		var raycast_from = view_camera.project_ray_origin(get_tree().root.get_mouse_position())
