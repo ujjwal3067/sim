@@ -21,7 +21,11 @@ var send_raycast = false;
 func _ready():
 	editor_controller = get_parent();
 	view_camera = get_node("View_Camera");
- 
+
+	# starting camera position
+	global_transform.origin += view_camera.global_transform.basis.y * 8;
+	global_transform.origin += view_camera.global_transform.basis.z * 15;
+
  
 func _process(delta):
 
